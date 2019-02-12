@@ -96,13 +96,14 @@ public class GameManager : MonoBehaviour {
     private IEnumerator OnStartActions()
     {
         //First bridge moving
-        UtilityManager.SINGLETON.WaitAndExecute(2, CreateFirstBridge);
+        yield return UtilityManager.SINGLETON.WaitAndExecute(2, CreateFirstBridge);
         //Second bridge rotating
-        UtilityManager.SINGLETON.WaitAndExecute(4, CreateSecondBridge);
+        yield return UtilityManager.SINGLETON.WaitAndExecute(2, CreateSecondBridge);
         //We make the enemy move
-        //UtilityManager.SINGLETON.WaitAndExecute(6, EnemyStarts);
+        yield return UtilityManager.SINGLETON.WaitAndExecute(3, EnemyStarts);
+
+        //After init, we change the status of the game to make it starts
         m_GameState = GameState.GAME;
-        yield return new WaitForSeconds(7);
     }
     void CreateFirstBridge()
     {
@@ -112,9 +113,11 @@ public class GameManager : MonoBehaviour {
     void CreateSecondBridge()
     {
        GameObject rBridge = Instantiate(rotatingBridgePrefab);
-       rBridge.GetComponent<MovingBridge>().speedClosing = 0.5f;
-       //After all, we change the status of the game to starts
-       m_GameState = GameState.GAME;
+       rBridge.GetComponent<RotatingBridge>().speedClosing = 0.3f;
+    }
+    void EnemyStarts()
+    {
+        enemy.GetComponent<WaterMovement>().shouldMove = true;
     }
 #endregion
 
@@ -127,7 +130,7 @@ public class GameManager : MonoBehaviour {
             //Then we compare if the cube is the highest element on the bridge chain
             Vector3 highestPos = UtilityManager.SINGLETON.SearchHighestGameObjectY("bridges");
             Vector3 stupidCubePos = StupidCube.transform.position;
-            Debug.Log("Calculated HighestPos: " + highestPos.y + "| StupidCube: " + stupidCubePos.y);
+            //Debug.Log("Calculated HighestPos: " + highestPos.y + "| StupidCube: " + stupidCubePos.y);
 
             if(stupidCubePos.y > highestPos.y)
             {
@@ -142,7 +145,9 @@ public class GameManager : MonoBehaviour {
     {
         float speed = UtilityManager.SINGLETON.RandomNumbersInterval(0.3f, 0.8f);
         Vector3 tallestWallPosition = UtilityManager.SINGLETON.SearchHighestGameObjectY("bridges");
-        int bridgeType = Random.Range(1,3);
+
+        //TODO: maybe use UtilityManager for it
+        int bridgeType = Random.Range(0, 2) == 0 ? 1 : 2;
         
         if(bridgeType == 1)
         {
@@ -157,6 +162,8 @@ public class GameManager : MonoBehaviour {
 
     void InstantiateBridge(BridgeType type, Vector3 tallestWallPosition, float speed)
     {
+        Debug.Log("Creating bridge type: " + type + "| on position: " + tallestWallPosition);
+
         switch (type)
         {
             case BridgeType.MOVING:

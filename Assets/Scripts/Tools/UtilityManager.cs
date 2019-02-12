@@ -74,17 +74,15 @@ namespace Util
         return UnityEngine.Random.Range(min, max);
     }
 
-    public void WaitAndExecute(float timer = 0.0F, Action callBack = null)
+    public IEnumerator WaitAndExecute(float timer = 0.0F, Action callBack = null)
     {
-        StartCoroutine(WaitAndExecute_INTERNAL(timer, callBack));
+        yield return StartCoroutine(WaitAndExecute_INTERNAL(timer, callBack));
     }
 
     IEnumerator WaitAndExecute_INTERNAL(float timer, Action callBack = null)
     {
-        if(timer != null)
-        {
-            yield return new WaitForSeconds(timer);
-        }
+        yield return new WaitForSeconds(timer);
+
         if (callBack != null)
         {
             callBack();

@@ -10,7 +10,7 @@ public class WaterMovement : MonoBehaviour {
     public bool shouldMove = false;
     
     void Update () {
-        if(shouldMove || GameManager.SINGLETON.GameState == GameState.GAME)
+        if(shouldMove && GameManager.SINGLETON.GameState == GameState.GAME)
         {
             transform.Translate(Vector3.up * speed * Time.deltaTime);
         }
@@ -18,7 +18,7 @@ public class WaterMovement : MonoBehaviour {
 
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("stupidCube"))
+        if (other.gameObject.CompareTag("StupidCube"))
         {
             //GameOver state
             Debug.Log("[WaterMovement] water contacted player.");
